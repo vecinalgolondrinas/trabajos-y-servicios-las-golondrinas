@@ -14,6 +14,7 @@
     --ink-soft:#565244;
     --pine:#3F5039;
     --pine-deep:#2C3A28;
+    --heading:#2C3A28;
     --rust:#A85327;
     --mustard:#D3A73D;
     --line:#C7BFA4;
@@ -27,6 +28,7 @@
     --ink-soft:#B3AE99;
     --pine:#5C7A53;
     --pine-deep:#33422E;
+    --heading:#8FCB80;
     --rust:#D18355;
     --mustard:#E0B94F;
     --line:#3C4234;
@@ -55,7 +57,7 @@
   header{
     position:relative;
     background:linear-gradient(180deg,var(--pine) 0%,var(--pine-deep) 100%);
-    color:var(--paper);
+    color:#F1ECDA;
     border-radius:18px;
     padding:38px clamp(150px, 26vw, 240px) 30px 32px;
     box-shadow:var(--shadow);
@@ -252,11 +254,11 @@
     font-size:19px;
     margin:0;
     line-height:1.2;
-    color:var(--pine-deep);
+    color:var(--heading);
     min-width:0;
     flex:1 1 auto;
   }
-  .badge-group{display:flex;align-items:center;gap:6px;flex-wrap:wrap;max-width:100%;}
+  .badge-group{display:flex;align-items:center;gap:6px;flex:none;}
   .badge{
     font-family:'IBM Plex Mono', monospace;
     font-size:10.5px;
@@ -310,9 +312,19 @@
     align-items:flex-start;
   }
   .meta-row svg{flex:none;margin-top:2px;color:var(--pine);}
-  .meta-row a{color:var(--pine-deep);text-decoration:none;}
+  .meta-row a{color:var(--heading);text-decoration:none;}
   .meta-row a:hover{text-decoration:underline;}
   .meta-row .indic{color:var(--ink-soft);font-size:12px;}
+  a.meta-link{
+    text-decoration:none;
+    color:var(--heading);
+    cursor:pointer;
+    border-radius:6px;
+    margin:-4px -6px;
+    padding:4px 6px;
+    transition:background-color .15s ease;
+  }
+  a.meta-link:hover{background:var(--paper-2);text-decoration:underline;}
 
   .socials{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
   .wa-btn{
@@ -347,7 +359,7 @@
     padding:60px 20px;
     color:var(--ink-soft);
   }
-  .empty-state h3{font-family:'Fraunces',serif;font-size:22px;color:var(--pine-deep);margin-bottom:8px;}
+  .empty-state h3{font-family:'Fraunces',serif;font-size:22px;color:var(--heading);margin-bottom:8px;}
 
   .load-state{
     text-align:center;
@@ -387,7 +399,7 @@
     border-radius:50%;
     border:1px solid var(--line);
     background:var(--card);
-    color:var(--pine-deep);
+    color:var(--heading);
     box-shadow:var(--shadow);
     display:flex;align-items:center;justify-content:center;
     cursor:pointer;
@@ -742,8 +754,8 @@ function renderGrid(){
 
     let metaHtml = "";
     if (p.horario) metaHtml += `<div class="meta-row">${iconClock()}<span>${p.horario}</span></div>`;
-    if (p.telefono) metaHtml += `<div class="meta-row">${iconPhone()}<a href="tel:${p.telefono.replace(/[^0-9+]/g,'')}">${p.telefono}</a></div>`;
-    if (p.email) metaHtml += `<div class="meta-row">${iconMail()}<a href="mailto:${p.email}">${p.email}</a></div>`;
+    if (p.telefono) metaHtml += `<a class="meta-row meta-link" href="tel:${p.telefono.replace(/[^0-9+]/g,'')}">${iconPhone()}<span>${p.telefono}</span></a>`;
+    if (p.email) metaHtml += `<a class="meta-row meta-link" href="mailto:${p.email}">${iconMail()}<span>${p.email}</span></a>`;
     if (p.direccion) metaHtml += `<div class="meta-row">${iconPin()}<span>${p.direccion}${p.indicaciones ? ` <span class="indic">— ${p.indicaciones}</span>` : ""}</span></div>`;
 
     let socialsHtml = "";
