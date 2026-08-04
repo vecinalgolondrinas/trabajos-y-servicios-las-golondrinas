@@ -516,24 +516,44 @@ function csvToPersonas(text){
   const rows = table.slice(1).filter(r => r.some(v => v && v.trim() !== ""));
 
   const idxNombre = findCol(headers, "nombre");
-  const idxRubroTexto = headers.findIndex(h => normalize(h) === "rubros");
+  // columna principal de rubro: cualquier encabezado que contenga la palabra "rubro"
+  // (cubre "Rubros", "Elegir un Rubro", etc., sin depender del texto exacto)
+  const idxRubroPrincipal = headers.findIndex(h => normalize(h).includes("rubro"));
   const idxMarca = findCol(headers, "marca temporal");
-  const idxDescripcion = findCol(headers, "descripcion");
-  const idxObservaciones = findCol(headers, "observaciones");
-  const idxTelefono = findCol(headers, "telefono");
-  const idxHorario = findCol(headers, "horario");
-  const idxEmail = findCol(headers, "email");
-  const idxDireccion = findCol(headers, "direccion");
-  const idxIndicaciones = findCol(headers, "indicaciones");
-  const idxInstagram = findCol(headers, "instagram");
-  const idxFacebook = findCol(headers, "facebook");
-  const idxWeb = findCol(headers, "pagina web", "sitio web");
 
-  // columnas de tipo "Elegir una opcion de <Rubro>" -> definen rubro + subrubro segun cual venga completa
-  const categoryCols = headers
-    .map((h, i) => ({ i, h }))
-    .filter(({h}) => normalize(h).startsWith("elegir una opcion de"))
-    .map(({i, h}) => ({ i, label: h.replace(/.*elegir una opci[oó]n de\s*/i, "").trim() }));
+  // busca solo a partir de la columna de Rubro en adelante, para no confundir estos campos
+  // con "Dirección de correo electrónico" (la cuenta de Google, columna B) u otras columnas iniciales
+  const desde = idxRubroPrincipal >= 0 ? idxRubroPrincipal + 1 : 0;
+  function findColDesde(...needles){
+    for (let i = desde; i < headers.length; i++){
+      if (needles.some(n => normalize(headers[i]).includes(normalize(n)))) return i;
+    }
+    return -1;
+  }
+  const idxDescripcion = findColDesde("descripcion");
+  const idxObservaciones = findColDesde("observaciones");
+  const idxTelefono = findColDesde("telefono");
+  const idxHorario = findColDesde("horario");
+  const idxEmail = findColDesde("email");
+  const idxDireccion = findColDesde("direccion");
+  const idxIndicaciones = findColDesde("indicaciones");
+  const idxInstagram = findColDesde("instagram");
+  const idxFacebook = findColDesde("facebook");
+  const idxWeb = findColDesde("pagina web", "sitio web");
+
+  // las columnas "Elegir tu actividad / oficio / etc" van entre la columna de Rubro y la de Descripción.
+  // se toman por posicion (no por el texto del encabezado) para no depender de como esten redactadas,
+  // asi si el formulario cambia la redaccion o el orden de las preguntas, se sigue detectando solo.
+  const inicioSub = idxRubroPrincipal >= 0 ? idxRubroPrincipal + 1 : -1;
+  const finSub = idxDescripcion >= 0 ? idxDescripcion : headers.length;
+  const categoryCols = [];
+  if (inicioSub >= 0){
+    for (let i = inicioSub; i < finSub; i++){
+      if (i === idxObservaciones || i === idxTelefono || i === idxHorario || i === idxEmail ||
+          i === idxDireccion || i === idxIndicaciones || i === idxInstagram || i === idxFacebook || i === idxWeb) continue;
+      categoryCols.push(i);
+    }
+  }
 
   const val = (row, idx) => (idx >= 0 && row[idx] !== undefined) ? row[idx].trim() : "";
   const noVal = (v) => !v || normalize(v) === "no";
@@ -552,12 +572,12 @@ function csvToPersonas(text){
   const DIAS_NUEVO = 7;
 
   return rows.map(row => {
-    let rubro = "", subrubro = "";
-    for (const col of categoryCols){
-      const v = val(row, col.i);
-      if (v){ rubro = col.label; subrubro = v; break; }
+    const rubro = val(row, idxRubroPrincipal) || "Sin rubro";
+    let subrubro = "";
+    for (const i of categoryCols){
+      const v = val(row, i);
+      if (v){ subrubro = v; break; }
     }
-    if (!rubro) rubro = val(row, idxRubroTexto) || "Sin rubro";
 
     const fecha = parseFecha(val(row, idxMarca));
     const esNuevo = fecha ? ((AHORA - fecha) / 86400000) <= DIAS_NUEVO : false;
