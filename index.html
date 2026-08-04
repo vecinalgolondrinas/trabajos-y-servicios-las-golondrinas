@@ -20,6 +20,23 @@
     --card:#FBF8F0;
     --shadow: 0 6px 18px rgba(43,42,31,0.12);
   }
+  html[data-theme="dark"]{
+    --paper:#1D2018;
+    --paper-2:#262A20;
+    --ink:#ECE7D6;
+    --ink-soft:#B3AE99;
+    --pine:#5C7A53;
+    --pine-deep:#33422E;
+    --rust:#D18355;
+    --mustard:#E0B94F;
+    --line:#3C4234;
+    --card:#252A1F;
+    --shadow: 0 6px 18px rgba(0,0,0,0.4);
+  }
+  body, .card, .search-row, .chip, .badge, .wa-btn, .to-top-btn, .theme-toggle{
+    transition:background-color .25s ease, color .25s ease, border-color .25s ease;
+  }
+  html[data-theme="dark"] .search-row{background:var(--card);border-color:var(--line);}
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{
@@ -237,6 +254,7 @@
     line-height:1.2;
     color:var(--pine-deep);
   }
+  .badge-group{display:flex;align-items:center;gap:6px;flex:none;}
   .badge{
     font-family:'IBM Plex Mono', monospace;
     font-size:10.5px;
@@ -249,6 +267,12 @@
     white-space:nowrap;
     flex:none;
   }
+  .badge.new{
+    background:var(--rust);
+    color:#fff;
+    animation:pulseNew 1.8s ease-in-out infinite;
+  }
+  @keyframes pulseNew{0%,100%{opacity:1;}50%{opacity:.65;}}
   .subrubro{
     font-size:13px;
     color:var(--rust);
@@ -289,6 +313,23 @@
   .meta-row .indic{color:var(--ink-soft);font-size:12px;}
 
   .socials{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
+  .wa-btn{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+    margin-top:14px;
+    padding:9px 14px;
+    background:#25D366;
+    color:#fff;
+    text-decoration:none;
+    font-size:13px;
+    font-weight:600;
+    border-radius:8px;
+    transition:transform .15s cubic-bezier(.34,1.56,.64,1), box-shadow .15s ease, background .15s ease;
+  }
+  .wa-btn:hover{background:#1ebe5a;transform:translateY(-2px);box-shadow:0 5px 14px rgba(37,211,102,0.35);}
+  .wa-btn:active{transform:translateY(0) scale(0.96);}
   .social-tag{
     font-family:'IBM Plex Mono', monospace;
     font-size:11.5px;
@@ -337,10 +378,38 @@
     opacity:.7;
   }
 
+  .to-top-btn, .theme-toggle{
+    position:fixed;
+    right:22px;
+    width:46px;height:46px;
+    border-radius:50%;
+    border:1px solid var(--line);
+    background:var(--card);
+    color:var(--pine-deep);
+    box-shadow:var(--shadow);
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
+    z-index:50;
+    transition:transform .18s cubic-bezier(.34,1.56,.64,1), opacity .2s ease, box-shadow .18s ease, background-color .25s ease, border-color .25s ease;
+  }
+  .to-top-btn{
+    bottom:22px;
+    opacity:0;
+    pointer-events:none;
+    transform:translateY(10px);
+  }
+  .to-top-btn.show{opacity:1;pointer-events:auto;transform:translateY(0);}
+  .to-top-btn:hover, .theme-toggle:hover{transform:translateY(-3px) scale(1.06);box-shadow:0 8px 18px rgba(43,42,31,0.22);}
+  .to-top-btn:active, .theme-toggle:active{transform:scale(0.92);}
+  .theme-toggle{bottom:78px;font-size:19px;}
+
   @media (max-width:520px){
     header{padding:clamp(130px,40vw,170px) 20px 26px;}
     .badge-logo{top:20px; left:50%; right:auto; transform:translateX(-50%); width:clamp(90px,26vw,130px);height:clamp(90px,26vw,130px);}
     .search-panel{margin-top:-20px;padding:14px 14px;}
+    .to-top-btn, .theme-toggle{right:14px;width:42px;height:42px;}
+    .to-top-btn{bottom:14px;}
+    .theme-toggle{bottom:64px;}
   }
 </style>
 </head>
@@ -348,7 +417,7 @@
 <div class="wrap">
 
   <header>
-    <img class="badge-logo" src="logo-junta-vecinal.jpeg" alt="Junta Vecinal Paraje Las Golondrinas">
+    <img class="badge-logo" src="logo-junta-vecinal.jpg" alt="Junta Vecinal Paraje Las Golondrinas">
     <p class="eyebrow">Paraje Las Golondrinas</p>
     <h1>Trabajos y Servicios<br>del Paraje</h1>
     <p class="sub">Un directorio de vecinos y vecinas que ofrecen oficios, actividades, profesiones y servicios en la zona. Buscá por rubro, nombre, horario o cualquier palabra clave.</p>
@@ -360,9 +429,9 @@
       <input id="searchInput" type="text" placeholder="Buscar por nombre, rubro, horario, dirección…" autocomplete="off">
       <button class="clear-btn" id="clearBtn">borrar ✕</button>
     </div>
-    <p class="chips-label">Categorias: </p>
+    <p class="chips-label">Rubro</p>
     <div class="chips" id="chips"></div>
-    <p class="chips-label sub" id="subChipsLabel" style="display:none;">Subcategorias: </p>
+    <p class="chips-label sub" id="subChipsLabel" style="display:none;">Subrubro</p>
     <div class="chips sub-chips" id="subChips"></div>
   </div>
 
@@ -375,7 +444,7 @@
 
   <div class="error-state" id="errorState" style="display:none;">
     <h3>No pudimos cargar los datos</h3>
-    <p>Revisá que tengas conexión a internet.</p>
+    <p>Si estás abriendo este archivo con doble click desde tu computadora, es normal que no cargue: el navegador bloquea este tipo de pedidos cuando la página no está subida a internet. Una vez publicada en GitHub Pages o Netlify va a funcionar sola. Si ya está publicada y sigue sin cargar, revisá que la hoja siga publicada en la web (Archivo → Compartir → Publicar en la web) y que tengas conexión a internet.</p>
     <button id="retryBtn" class="chip">Reintentar</button>
   </div>
 
@@ -391,6 +460,9 @@
     <br><button id="refreshBtn" class="clear-btn" style="display:inline-block;margin-top:6px;">↻ actualizar ahora</button>
   </footer>
 </div>
+
+<button id="toTopBtn" class="to-top-btn" aria-label="Volver arriba" title="Volver arriba"></button>
+<button id="themeToggle" class="theme-toggle" aria-label="Cambiar tema" title="Modo claro/oscuro">🌙</button>
 
 <script>
 // URL del CSV publicado (Google Sheets: Archivo > Compartir > Publicar en la web)
@@ -445,6 +517,7 @@ function csvToPersonas(text){
 
   const idxNombre = findCol(headers, "nombre");
   const idxRubroTexto = headers.findIndex(h => normalize(h) === "rubros");
+  const idxMarca = findCol(headers, "marca temporal");
   const idxDescripcion = findCol(headers, "descripcion");
   const idxObservaciones = findCol(headers, "observaciones");
   const idxTelefono = findCol(headers, "telefono");
@@ -465,6 +538,19 @@ function csvToPersonas(text){
   const val = (row, idx) => (idx >= 0 && row[idx] !== undefined) ? row[idx].trim() : "";
   const noVal = (v) => !v || normalize(v) === "no";
 
+  // Google Forms en Argentina guarda "Marca temporal" como DD/MM/AAAA HH:MM:SS
+  function parseFecha(str){
+    if (!str) return null;
+    const m = str.trim().match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})\s+(\d{1,2}):(\d{2})(?::(\d{2}))?/);
+    if (!m) return null;
+    const [, dd, mm, yyyy, hh, mi, ss] = m;
+    const d = new Date(+yyyy, +mm - 1, +dd, +hh, +mi, +(ss || 0));
+    return isNaN(d.getTime()) ? null : d;
+  }
+
+  const AHORA = new Date();
+  const DIAS_NUEVO = 7;
+
   return rows.map(row => {
     let rubro = "", subrubro = "";
     for (const col of categoryCols){
@@ -473,9 +559,12 @@ function csvToPersonas(text){
     }
     if (!rubro) rubro = val(row, idxRubroTexto) || "Sin rubro";
 
+    const fecha = parseFecha(val(row, idxMarca));
+    const esNuevo = fecha ? ((AHORA - fecha) / 86400000) <= DIAS_NUEVO : false;
+
     const p = {
       nombre: val(row, idxNombre) || "Sin nombre",
-      rubro, subrubro,
+      rubro, subrubro, esNuevo,
       descripcion: val(row, idxDescripcion),
       observaciones: val(row, idxObservaciones),
       telefono: val(row, idxTelefono),
@@ -533,6 +622,19 @@ function iconPhone(){return `<svg width="14" height="14" viewBox="0 0 24 24" fil
 function iconClock(){return `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`;}
 function iconMail(){return `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z" opacity="0"></path><path d="M22 6c0-1.1-.9-2-2-2H4a2 2 0 0 0-2 2v12c0 1.1.9 2 2 2h16a2 2 0 0 0 2-2V6z"></path><polyline points="22 6 12 13 2 6"></polyline></svg>`;}
 function iconPin(){return `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>`;}
+function iconWhatsapp(){return `<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2c-5.52 0-10 4.48-10 10 0 1.77.46 3.45 1.27 4.9L2 22l5.25-1.38a9.96 9.96 0 0 0 4.79 1.22h.01c5.52 0 10-4.48 10-10s-4.48-10-10.01-10zm0 18.2h-.01a8.2 8.2 0 0 1-4.18-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.34c0-4.54 3.7-8.24 8.25-8.24 2.2 0 4.27.86 5.83 2.42a8.19 8.19 0 0 1 2.41 5.83c0 4.55-3.7 8.19-8.25 8.19zm4.52-6.14c-.25-.12-1.47-.72-1.7-.81-.23-.08-.39-.12-.56.13-.17.25-.64.81-.78.97-.14.17-.29.19-.54.06-.25-.12-1.04-.38-1.98-1.22-.73-.65-1.23-1.46-1.37-1.7-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.17.04-.31-.02-.44-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.42-.14 0-.31-.02-.47-.02-.17 0-.44.06-.67.31-.23.25-.87.85-.87 2.08 0 1.22.89 2.41 1.02 2.57.12.17 1.75 2.67 4.24 3.74.59.26 1.06.41 1.42.52.6.19 1.14.16 1.57.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.08.14-1.18-.06-.1-.23-.16-.48-.28z"/></svg>`;}
+function iconArrowUp(){return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>`;}
+
+// arma un link de wa.me a partir del telefono cargado, con mejor esfuerzo:
+// deja solo digitos, saca el 0 inicial (codigo de larga distancia) y antepone 54 (Argentina) si falta
+function whatsappLink(telefono){
+  if (!telefono) return "";
+  let digits = telefono.replace(/\D/g, "");
+  if (!digits) return "";
+  if (digits.startsWith("0")) digits = digits.slice(1);
+  if (!digits.startsWith("54")) digits = "54" + digits;
+  return `https://wa.me/${digits}`;
+}
 
 function createRipple(e, el){
   const rect = el.getBoundingClientRect();
@@ -627,16 +729,22 @@ function renderGrid(){
     if (p.facebook) socialsHtml += `<span class="social-tag">FB ${p.facebook}</span>`;
     if (p.web) socialsHtml += `<span class="social-tag">Web ${p.web}</span>`;
 
+    const wa = whatsappLink(p.telefono);
+
     card.innerHTML = `
       <div class="card-top">
         <h3>${p.nombre}</h3>
-        <span class="badge">${p.rubro}</span>
+        <div class="badge-group">
+          ${p.esNuevo ? `<span class="badge new">✦ Nuevo</span>` : ""}
+          <span class="badge">${p.rubro}</span>
+        </div>
       </div>
       ${p.subrubro ? `<p class="subrubro">${p.subrubro}</p>` : ""}
       ${p.descripcion ? `<p class="desc">${p.descripcion}</p>` : ""}
       ${p.observaciones ? `<p class="obs">${p.observaciones}</p>` : ""}
       <div class="meta">${metaHtml}</div>
       ${socialsHtml ? `<div class="socials">${socialsHtml}</div>` : ""}
+      ${wa ? `<a class="wa-btn" href="${wa}" target="_blank" rel="noopener">${iconWhatsapp()} Escribir por WhatsApp</a>` : ""}
     `;
     gridEl.appendChild(card);
   });
@@ -648,6 +756,27 @@ document.getElementById("retryBtn").addEventListener("click", (e) => { createRip
 document.getElementById("refreshBtn").addEventListener("click", (e) => { createRipple(e, e.currentTarget); cargarDatos(); });
 
 cargarDatos();
+
+// ---- volver arriba ----
+const toTopBtn = document.getElementById("toTopBtn");
+toTopBtn.innerHTML = iconArrowUp();
+window.addEventListener("scroll", () => {
+  toTopBtn.classList.toggle("show", window.scrollY > 420);
+});
+toTopBtn.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+
+// ---- modo oscuro (vale para esta visita; no se guarda entre sesiones) ----
+const themeToggle = document.getElementById("themeToggle");
+function aplicarTema(modo){
+  document.documentElement.setAttribute("data-theme", modo);
+  themeToggle.textContent = modo === "dark" ? "☀️" : "🌙";
+}
+const prefiereOscuro = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+aplicarTema(prefiereOscuro ? "dark" : "light");
+themeToggle.addEventListener("click", () => {
+  const actual = document.documentElement.getAttribute("data-theme");
+  aplicarTema(actual === "dark" ? "light" : "dark");
+});
 </script>
 </body>
 </html>
