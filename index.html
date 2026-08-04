@@ -212,6 +212,20 @@
   .chip.sub.active:hover{background:#8a4520;border-color:#8a4520;color:#fff;}
   .chip.sub.active .ripple{background:rgba(255,255,255,0.45);}
 
+  .chips-label.sub2{color:var(--pine);opacity:.8;margin-top:10px;}
+  .sub-chips-2{margin-top:2px;}
+  .chip.sub2{
+    font-size:10.5px;
+    padding:4px 10px;
+    background:transparent;
+    border-color:var(--line);
+    color:var(--ink-soft);
+  }
+  .chip.sub2:hover{border-color:var(--pine);color:var(--pine);background:rgba(63,80,57,0.06);}
+  .chip.sub2.active{background:var(--pine);border-color:var(--pine);color:#fff;}
+  .chip.sub2.active:hover{background:var(--pine-deep);border-color:var(--pine-deep);color:#fff;}
+  .chip.sub2.active .ripple{background:rgba(255,255,255,0.45);}
+
   .result-count{
     font-family:'IBM Plex Mono', monospace;
     font-size:12.5px;
@@ -521,6 +535,8 @@
     <div class="chips" id="chips"></div>
     <p class="chips-label sub" id="subChipsLabel" style="display:none;">Subrubro</p>
     <div class="chips sub-chips" id="subChips"></div>
+    <p class="chips-label sub2" id="subSubChipsLabel" style="display:none;">Detalle</p>
+    <div class="chips sub-chips sub-chips-2" id="subSubChips"></div>
   </div>
 
   <div class="toolbar-row">
@@ -671,18 +687,22 @@ function csvToPersonas(text){
 
   return rows.map(row => {
     const rubro = val(row, idxRubroPrincipal) || "Sin rubro";
-    let subrubro = "";
+    // junta todos los valores cargados entre las columnas de categoria, en orden:
+    // el primero es el subrubro; si hay un segundo (ej. Artesanía -> Cerámica), es el detalle mas fino
+    const nivelesElegidos = [];
     for (const i of categoryCols){
       const v = val(row, i);
-      if (v){ subrubro = v; break; }
+      if (v) nivelesElegidos.push(v);
     }
+    const subrubro = nivelesElegidos[0] || "";
+    const subsubrubro = nivelesElegidos[1] || "";
 
     const fecha = parseFecha(val(row, idxMarca));
     const esNuevo = fecha ? ((AHORA - fecha) / 86400000) <= DIAS_NUEVO : false;
 
     const p = {
       nombre: val(row, idxNombre) || "Sin nombre",
-      rubro, subrubro, esNuevo, _fecha: fecha,
+      rubro, subrubro, subsubrubro, esNuevo, _fecha: fecha,
       descripcion: val(row, idxDescripcion),
       observaciones: val(row, idxObservaciones),
       telefono: val(row, idxTelefono),
@@ -694,7 +714,7 @@ function csvToPersonas(text){
       facebook: noVal(val(row, idxFacebook)) ? "" : val(row, idxFacebook),
       web: noVal(val(row, idxWeb)) ? "" : val(row, idxWeb),
     };
-    p._haystack = normalize([p.nombre, p.rubro, p.subrubro, p.descripcion, p.horario, p.direccion, p.observaciones, p.telefono].join(" "));
+    p._haystack = normalize([p.nombre, p.rubro, p.subrubro, p.subsubrubro, p.descripcion, p.horario, p.direccion, p.observaciones, p.telefono].join(" "));
     return p;
   }).filter(p => p.nombre && p.nombre !== "Sin nombre");
 }
@@ -730,6 +750,8 @@ async function cargarDatos(){
 const chipsEl = document.getElementById("chips");
 const subChipsEl = document.getElementById("subChips");
 const subChipsLabel = document.getElementById("subChipsLabel");
+const subSubChipsEl = document.getElementById("subSubChips");
+const subSubChipsLabel = document.getElementById("subSubChipsLabel");
 const gridEl = document.getElementById("grid");
 const searchInput = document.getElementById("searchInput");
 const clearBtn = document.getElementById("clearBtn");
@@ -738,6 +760,7 @@ const emptyState = document.getElementById("emptyState");
 
 let activeRubro = "Todos";
 let activeSubrubro = "Todas";
+let activeSubSubrubro = "Todas";
 let ordenActual = "nombre";
 
 function iconPhone(){return `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>`;}
@@ -752,7 +775,10 @@ function iconMic(){return `<svg width="16" height="16" viewBox="0 0 24 24" fill=
 // arma el texto para compartir la ficha de una persona por WhatsApp / lo que elija el celular
 function compartirFicha(p){
   const lineas = [`*${p.nombre}*`];
-  lineas.push(p.subrubro ? `${p.rubro} · ${p.subrubro}` : p.rubro);
+  let rubroLinea = p.rubro;
+  if (p.subrubro) rubroLinea += ` · ${p.subrubro}`;
+  if (p.subsubrubro) rubroLinea += ` · ${p.subsubrubro}`;
+  lineas.push(rubroLinea);
   if (p.descripcion) lineas.push(p.descripcion);
   if (p.horario) lineas.push(`🕒 ${p.horario}`);
   if (p.telefono) lineas.push(`📞 ${p.telefono}`);
@@ -800,6 +826,7 @@ function renderChips(){
       createRipple(e, btn);
       activeRubro = r;
       activeSubrubro = "Todas";
+      activeSubSubrubro = "Todas";
       renderChips();
       renderGrid();
     });
@@ -810,7 +837,7 @@ function renderChips(){
 
 function renderSubChips(){
   subChipsEl.innerHTML = "";
-  if (activeRubro === "Todos"){ subChipsLabel.style.display = "none"; return; }
+  if (activeRubro === "Todos"){ subChipsLabel.style.display = "none"; renderSubSubChips(); return; }
 
   // subrubros presentes hoy en la planilla para el rubro elegido — se recalculan
   // solos en cada carga de datos, asi que si se agrega uno nuevo aparece sin tocar el codigo
@@ -818,7 +845,7 @@ function renderSubChips(){
     personas.filter(p => p.rubro === activeRubro && p.subrubro).map(p => p.subrubro)
   )].sort((a,b) => a.localeCompare(b, "es"));
 
-  if (!subs.length){ subChipsLabel.style.display = "none"; return; }
+  if (!subs.length){ subChipsLabel.style.display = "none"; renderSubSubChips(); return; }
   subChipsLabel.style.display = "block";
 
   const opciones = ["Todas", ...subs];
@@ -829,10 +856,40 @@ function renderSubChips(){
     btn.addEventListener("click", (e) => {
       createRipple(e, btn);
       activeSubrubro = s;
+      activeSubSubrubro = "Todas";
       renderSubChips();
       renderGrid();
     });
     subChipsEl.appendChild(btn);
+  });
+  renderSubSubChips();
+}
+
+function renderSubSubChips(){
+  subSubChipsEl.innerHTML = "";
+  if (activeRubro === "Todos" || activeSubrubro === "Todas"){ subSubChipsLabel.style.display = "none"; return; }
+
+  // tercer nivel: solo existe para algunos subrubros puntuales (ej. Artesanía -> Cerámica, Madera...).
+  // si nadie cargo ese detalle para este subrubro, no se muestra nada.
+  const detalles = [...new Set(
+    personas.filter(p => p.rubro === activeRubro && p.subrubro === activeSubrubro && p.subsubrubro).map(p => p.subsubrubro)
+  )].sort((a,b) => a.localeCompare(b, "es"));
+
+  if (!detalles.length){ subSubChipsLabel.style.display = "none"; return; }
+  subSubChipsLabel.style.display = "block";
+
+  const opciones = ["Todas", ...detalles];
+  opciones.forEach(s => {
+    const btn = document.createElement("button");
+    btn.className = "chip sub2" + (s === activeSubSubrubro ? " active" : "");
+    btn.textContent = s;
+    btn.addEventListener("click", (e) => {
+      createRipple(e, btn);
+      activeSubSubrubro = s;
+      renderSubSubChips();
+      renderGrid();
+    });
+    subSubChipsEl.appendChild(btn);
   });
 }
 
@@ -843,8 +900,9 @@ function renderGrid(){
   const filtered = personas.filter(p => {
     const matchesRubro = activeRubro === "Todos" || p.rubro === activeRubro;
     const matchesSubrubro = activeSubrubro === "Todas" || p.subrubro === activeSubrubro;
+    const matchesSubSubrubro = activeSubSubrubro === "Todas" || p.subsubrubro === activeSubSubrubro;
     const matchesQuery = q === "" || p._haystack.includes(q);
-    return matchesRubro && matchesSubrubro && matchesQuery;
+    return matchesRubro && matchesSubrubro && matchesSubSubrubro && matchesQuery;
   });
 
   if (ordenActual === "recientes"){
@@ -855,9 +913,9 @@ function renderGrid(){
     filtered.sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
   }
 
-  const etiqueta = activeRubro === "Todos"
-    ? "Todos los rubros"
-    : (activeSubrubro === "Todas" ? activeRubro : `${activeRubro} · ${activeSubrubro}`);
+  let etiqueta = activeRubro === "Todos" ? "Todos los rubros" : activeRubro;
+  if (activeSubrubro !== "Todas") etiqueta += ` · ${activeSubrubro}`;
+  if (activeSubSubrubro !== "Todas") etiqueta += ` · ${activeSubSubrubro}`;
   resultCount.innerHTML = `<span>${etiqueta}</span><span><span class="n">${filtered.length}</span> vecino${filtered.length===1?"":"s"} encontrado${filtered.length===1?"":"s"}</span>`;
 
   gridEl.innerHTML = "";
@@ -889,7 +947,7 @@ function renderGrid(){
           <span class="badge">${p.rubro}</span>
         </div>
       </div>
-      ${p.subrubro ? `<p class="subrubro">${p.subrubro}</p>` : ""}
+      ${p.subrubro ? `<p class="subrubro">${p.subrubro}${p.subsubrubro ? ` · ${p.subsubrubro}` : ""}</p>` : ""}
       ${p.descripcion ? `<p class="desc">${p.descripcion}</p>` : ""}
       ${p.observaciones ? `<p class="obs">${p.observaciones}</p>` : ""}
       <div class="meta">${metaHtml}</div>
