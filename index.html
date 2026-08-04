@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trabajos y Servicios · Paraje Las Golondrinas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EFEADA;
+    --paper-2:#E7E0CC;
+    --ink:#2B2A1F;
+    --ink-soft:#565244;
+    --pine:#3F5039;
+    --pine-deep:#2C3A28;
+    --rust:#A85327;
+    --mustard:#D3A73D;
+    --line:#C7BFA4;
+    --card:#FBF8F0;
+    --shadow: 0 6px 18px rgba(43,42,31,0.12);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(circle at 15% 8%, rgba(168,83,39,0.06), transparent 40%),
+      radial-gradient(circle at 85% 92%, rgba(63,80,57,0.08), transparent 45%),
+      var(--paper);
+    color:var(--ink);
+    font-family:'Work Sans', sans-serif;
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:36px 20px 80px;}
+
+  /* ---- Header / signo de madera ---- */
+  header{
+    position:relative;
+    background:linear-gradient(180deg,var(--pine) 0%,var(--pine-deep) 100%);
+    color:var(--paper);
+    border-radius:18px;
+    padding:38px clamp(150px, 26vw, 240px) 30px 32px;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+  header::before{
+    content:"";
+    position:absolute; inset:0;
+    background-image:repeating-linear-gradient(115deg, rgba(255,255,255,0.025) 0 2px, transparent 2px 26px);
+    pointer-events:none;
+  }
+  .badge-logo{
+    position:absolute;
+    top:24px; right:28px;
+    width:clamp(110px, 16vw, 200px);
+    height:clamp(110px, 16vw, 200px);
+    border-radius:50%;
+    object-fit:cover;
+    border:3px solid var(--mustard);
+    box-shadow:0 8px 20px rgba(0,0,0,0.35);
+    background:var(--paper);
+    z-index:2;
+    transform:none;
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--mustard);
+    margin:0 0 10px;
+  }
+  h1{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:clamp(28px,4.4vw,42px);
+    line-height:1.05;
+    margin:0 0 12px;
+    letter-spacing:-0.01em;
+  }
+  header p.sub{
+    margin:0;
+    max-width:56ch;
+    color:#E4E4D2;
+    font-size:15px;
+    line-height:1.55;
+  }
+
+  /* ---- Barra de busqueda ---- */
+  .search-panel{
+    margin-top:-26px;
+    position:relative;
+    z-index:2;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    box-shadow:var(--shadow);
+    padding:18px 20px;
+  }
+  .search-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:10px 14px;
+    background:#fff;
+  }
+  .search-row svg{flex:none;color:var(--ink-soft);}
+  .search-row input{
+    border:none;outline:none;background:transparent;
+    font-family:'Work Sans', sans-serif;
+    font-size:16px;color:var(--ink);
+    width:100%;
+  }
+  .search-row input::placeholder{color:#9A9483;}
+  .clear-btn{
+    background:none;border:none;cursor:pointer;
+    color:var(--ink-soft);font-size:13px;
+    font-family:'IBM Plex Mono',monospace;
+    padding:4px 8px;border-radius:6px;
+    display:none;
+    position:relative;
+    overflow:hidden;
+    transition:background .15s ease, color .15s ease, transform .15s cubic-bezier(.34,1.56,.64,1);
+  }
+  .clear-btn:hover{background:var(--paper-2);color:var(--rust);transform:scale(1.06);}
+  .clear-btn:active{transform:scale(0.92);}
+
+  .chips{
+    display:flex;flex-wrap:wrap;gap:8px;
+    margin-top:14px;
+  }
+  .chip{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    padding:7px 13px;
+    border-radius:100px;
+    border:1px solid var(--line);
+    background:var(--paper);
+    color:var(--ink-soft);
+    cursor:pointer;
+    transition:transform .18s cubic-bezier(.34,1.56,.64,1), box-shadow .18s ease, border-color .18s ease, color .18s ease, background .18s ease;
+    user-select:none;
+    position:relative;
+    overflow:hidden;
+  }
+  .chip:hover{border-color:var(--pine);color:var(--pine);transform:translateY(-2px) scale(1.04);box-shadow:0 4px 10px rgba(63,80,57,0.18);}
+  .chip:active{transform:translateY(0) scale(0.94);}
+  .chip.active{
+    background:var(--pine);
+    border-color:var(--pine);
+    color:#fff;
+  }
+  .chip.active:hover{background:var(--pine-deep);border-color:var(--pine-deep);color:#fff;transform:translateY(-2px) scale(1.04);}
+  .ripple{
+    position:absolute;
+    border-radius:50%;
+    background:rgba(63,80,57,0.35);
+    transform:scale(0);
+    animation:rippleAnim .5s ease-out forwards;
+    pointer-events:none;
+  }
+  .chip.active .ripple{background:rgba(255,255,255,0.45);}
+  @keyframes rippleAnim{to{transform:scale(3);opacity:0;}}
+
+  .result-count{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin:20px 2px 14px;
+    display:flex;justify-content:space-between;align-items:center;
+  }
+  .result-count .n{color:var(--rust);font-weight:600;}
+
+  /* ---- Grid de fichas ---- */
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(290px,1fr));
+    gap:18px;
+  }
+  .card{
+    position:relative;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:22px 20px 18px;
+    box-shadow:0 2px 6px rgba(43,42,31,0.06);
+    transition:transform .15s ease, box-shadow .15s ease;
+    animation:rise .35s ease backwards;
+  }
+  .card:hover{transform:translateY(-3px);box-shadow:var(--shadow);}
+  .card::before{
+    content:"";
+    position:absolute; top:-7px; left:24px;
+    width:14px;height:14px;border-radius:50%;
+    background:var(--rust);
+    box-shadow:0 2px 3px rgba(0,0,0,0.25), inset -2px -2px 3px rgba(0,0,0,0.2);
+  }
+  @keyframes rise{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+  .card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:6px;}
+  .card h3{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:19px;
+    margin:0;
+    line-height:1.2;
+    color:var(--pine-deep);
+  }
+  .badge{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10.5px;
+    letter-spacing:.03em;
+    text-transform:uppercase;
+    background:var(--mustard);
+    color:var(--ink);
+    padding:3px 8px;
+    border-radius:5px;
+    white-space:nowrap;
+    flex:none;
+  }
+  .subrubro{
+    font-size:13px;
+    color:var(--rust);
+    font-weight:600;
+    margin:0 0 10px;
+  }
+  .desc{
+    font-size:14px;
+    line-height:1.5;
+    color:var(--ink);
+    margin:0 0 10px;
+    white-space:pre-line;
+  }
+  .obs{
+    font-size:12.5px;
+    color:var(--ink-soft);
+    font-style:italic;
+    margin:0 0 12px;
+    line-height:1.4;
+  }
+  .meta{
+    border-top:1px dashed var(--line);
+    padding-top:10px;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+  .meta-row{
+    display:flex;
+    gap:8px;
+    font-size:13px;
+    color:var(--ink);
+    align-items:flex-start;
+  }
+  .meta-row svg{flex:none;margin-top:2px;color:var(--pine);}
+  .meta-row a{color:var(--pine-deep);text-decoration:none;}
+  .meta-row a:hover{text-decoration:underline;}
+  .meta-row .indic{color:var(--ink-soft);font-size:12px;}
+
+  .socials{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
+  .social-tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px;
+    background:var(--paper-2);
+    border:1px solid var(--line);
+    padding:3px 8px;
+    border-radius:6px;
+    color:var(--ink-soft);
+  }
+
+  .empty-state{
+    text-align:center;
+    padding:60px 20px;
+    color:var(--ink-soft);
+  }
+  .empty-state h3{font-family:'Fraunces',serif;font-size:22px;color:var(--pine-deep);margin-bottom:8px;}
+
+  .load-state{
+    text-align:center;
+    padding:60px 20px;
+    color:var(--ink-soft);
+  }
+  .spinner{
+    width:26px;height:26px;margin:0 auto 14px;
+    border:3px solid var(--line);
+    border-top-color:var(--rust);
+    border-radius:50%;
+    animation:spin 0.8s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  .error-state{
+    text-align:center;
+    padding:50px 20px;
+    color:var(--ink-soft);
+  }
+  .error-state h3{font-family:'Fraunces',serif;font-size:20px;color:var(--rust);margin-bottom:8px;}
+  .error-state button{margin-top:14px;}
+
+  footer{
+    text-align:center;
+    margin-top:50px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px;
+    color:var(--ink-soft);
+    opacity:.7;
+  }
+
+  @media (max-width:520px){
+    header{padding:clamp(130px,40vw,170px) 20px 26px;}
+    .badge-logo{top:20px; left:50%; right:auto; transform:translateX(-50%); width:clamp(90px,26vw,130px);height:clamp(90px,26vw,130px);}
+    .search-panel{margin-top:-20px;padding:14px 14px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <img class="badge-logo" src="logo-junta-vecinal.jpeg" alt="Junta Vecinal Paraje Las Golondrinas">
+    <p class="eyebrow">Paraje Las Golondrinas</p>
+    <h1>Trabajos y Servicios<br>del Paraje</h1>
+    <p class="sub">Un directorio de vecinos y vecinas que ofrecen oficios, actividades, profesiones y servicios en la zona. Buscá por rubro, nombre, horario o cualquier palabra clave.</p>
+  </header>
+
+  <div class="search-panel">
+    <div class="search-row">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      <input id="searchInput" type="text" placeholder="Buscar por nombre, rubro, horario, dirección…" autocomplete="off">
+      <button class="clear-btn" id="clearBtn">borrar ✕</button>
+    </div>
+    <div class="chips" id="chips"></div>
+  </div>
+
+  <div class="result-count" id="resultCount"></div>
+
+  <div class="load-state" id="loadState">
+    <div class="spinner"></div>
+    <p>Cargando vecinos desde la planilla…</p>
+  </div>
+
+  <div class="error-state" id="errorState" style="display:none;">
+    <h3>No pudimos cargar los datos</h3>
+    <p>Si estás abriendo este archivo con doble click desde tu computadora, es normal que no cargue: el navegador bloquea este tipo de pedidos cuando la página no está subida a internet. Una vez publicada en GitHub Pages o Netlify va a funcionar sola. Si ya está publicada y sigue sin cargar, revisá que la hoja siga publicada en la web (Archivo → Compartir → Publicar en la web) y que tengas conexión a internet.</p>
+    <button id="retryBtn" class="chip">Reintentar</button>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="empty-state" id="emptyState" style="display:none;">
+    <h3>No encontramos coincidencias</h3>
+    <p>Probá con otra palabra o mirá los rubros disponibles arriba.</p>
+  </div>
+
+  <footer>
+    <span id="updatedAt"></span> · Los datos se traen en vivo desde la planilla de respuestas del formulario · Paraje Las Golondrinas
+    <br><button id="refreshBtn" class="clear-btn" style="display:inline-block;margin-top:6px;">↻ actualizar ahora</button>
+  </footer>
+</div>
+
+<script>
+// URL del CSV publicado (Google Sheets: Archivo > Compartir > Publicar en la web)
+const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS6Ph0qEPXFSsMjJUvCks-mhIehT4eJEYPTJmg2xcX8QhOm00iBrPdzmRMFDc5fKwgIQO6OKes3it3k/pub?output=csv";
+
+let personas = [];
+let rubros = ["Todos"];
+
+// ---- normalizacion: minusculas + sin acentos, para que el buscador
+// encuentre resultados aunque la persona escriba mal o sin tildes ----
+function normalize(str){
+  return (str || "")
+    .toString()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
+
+// ---- parser de CSV: soporta campos entre comillas con comas y saltos de linea adentro ----
+function parseCSV(text){
+  const rows = [];
+  let row = [], field = "", inQuotes = false;
+  for (let i = 0; i < text.length; i++){
+    const c = text[i];
+    if (inQuotes){
+      if (c === '"'){
+        if (text[i+1] === '"'){ field += '"'; i++; }
+        else { inQuotes = false; }
+      } else { field += c; }
+    } else {
+      if (c === '"'){ inQuotes = true; }
+      else if (c === ','){ row.push(field); field = ""; }
+      else if (c === '\r'){ /* ignorar, se maneja con \n */ }
+      else if (c === '\n'){ row.push(field); rows.push(row); row = []; field = ""; }
+      else { field += c; }
+    }
+  }
+  if (field.length || row.length){ row.push(field); rows.push(row); }
+  return rows.filter(r => r.length > 1 || (r[0] && r[0].trim() !== ""));
+}
+
+// busca el indice de columna cuyo encabezado normalizado contiene alguno de los textos dados
+function findCol(headers, ...needles){
+  return headers.findIndex(h => needles.some(n => normalize(h).includes(normalize(n))));
+}
+
+function csvToPersonas(text){
+  const table = parseCSV(text);
+  if (!table.length) return [];
+  const headers = table[0];
+  const rows = table.slice(1).filter(r => r.some(v => v && v.trim() !== ""));
+
+  const idxNombre = findCol(headers, "nombre");
+  const idxRubroTexto = headers.findIndex(h => normalize(h) === "rubros");
+  const idxDescripcion = findCol(headers, "descripcion");
+  const idxObservaciones = findCol(headers, "observaciones");
+  const idxTelefono = findCol(headers, "telefono");
+  const idxHorario = findCol(headers, "horario");
+  const idxEmail = findCol(headers, "email");
+  const idxDireccion = findCol(headers, "direccion");
+  const idxIndicaciones = findCol(headers, "indicaciones");
+  const idxInstagram = findCol(headers, "instagram");
+  const idxFacebook = findCol(headers, "facebook");
+  const idxWeb = findCol(headers, "pagina web", "sitio web");
+
+  // columnas de tipo "Elegir una opcion de <Rubro>" -> definen rubro + subrubro segun cual venga completa
+  const categoryCols = headers
+    .map((h, i) => ({ i, h }))
+    .filter(({h}) => normalize(h).startsWith("elegir una opcion de"))
+    .map(({i, h}) => ({ i, label: h.replace(/.*elegir una opci[oó]n de\s*/i, "").trim() }));
+
+  const val = (row, idx) => (idx >= 0 && row[idx] !== undefined) ? row[idx].trim() : "";
+  const noVal = (v) => !v || normalize(v) === "no";
+
+  return rows.map(row => {
+    let rubro = "", subrubro = "";
+    for (const col of categoryCols){
+      const v = val(row, col.i);
+      if (v){ rubro = col.label; subrubro = v; break; }
+    }
+    if (!rubro) rubro = val(row, idxRubroTexto) || "Sin rubro";
+
+    const p = {
+      nombre: val(row, idxNombre) || "Sin nombre",
+      rubro, subrubro,
+      descripcion: val(row, idxDescripcion),
+      observaciones: val(row, idxObservaciones),
+      telefono: val(row, idxTelefono),
+      horario: val(row, idxHorario),
+      email: val(row, idxEmail),
+      direccion: val(row, idxDireccion),
+      indicaciones: val(row, idxIndicaciones),
+      instagram: noVal(val(row, idxInstagram)) ? "" : val(row, idxInstagram),
+      facebook: noVal(val(row, idxFacebook)) ? "" : val(row, idxFacebook),
+      web: noVal(val(row, idxWeb)) ? "" : val(row, idxWeb),
+    };
+    p._haystack = normalize([p.nombre, p.rubro, p.subrubro, p.descripcion, p.horario, p.direccion, p.observaciones, p.telefono].join(" "));
+    return p;
+  }).filter(p => p.nombre && p.nombre !== "Sin nombre");
+}
+
+const loadState = document.getElementById("loadState");
+const errorState = document.getElementById("errorState");
+const updatedAtEl = document.getElementById("updatedAt");
+
+async function cargarDatos(){
+  loadState.style.display = "block";
+  errorState.style.display = "none";
+  gridEl.innerHTML = "";
+  resultCount.innerHTML = "";
+  try {
+    const res = await fetch(SHEET_CSV_URL + "&_=" + Date.now(), { cache: "no-store" });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const text = await res.text();
+    personas = csvToPersonas(text);
+    rubros = ["Todos", ...new Set(personas.map(p => p.rubro))];
+    loadState.style.display = "none";
+    updatedAtEl.textContent = "Actualizado " + new Date().toLocaleString("es-AR", {hour:'2-digit', minute:'2-digit', day:'2-digit', month:'2-digit'});
+    renderChips();
+    renderGrid();
+  } catch (err){
+    loadState.style.display = "none";
+    errorState.style.display = "block";
+  }
+}
+
+const chipsEl = document.getElementById("chips");
+const gridEl = document.getElementById("grid");
+const searchInput = document.getElementById("searchInput");
+const clearBtn = document.getElementById("clearBtn");
+const resultCount = document.getElementById("resultCount");
+const emptyState = document.getElementById("emptyState");
+
+let activeRubro = "Todos";
+
+function iconPhone(){return `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>`;}
+function iconClock(){return `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`;}
+function iconMail(){return `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z" opacity="0"></path><path d="M22 6c0-1.1-.9-2-2-2H4a2 2 0 0 0-2 2v12c0 1.1.9 2 2 2h16a2 2 0 0 0 2-2V6z"></path><polyline points="22 6 12 13 2 6"></polyline></svg>`;}
+function iconPin(){return `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>`;}
+
+function createRipple(e, el){
+  const rect = el.getBoundingClientRect();
+  const size = Math.max(rect.width, rect.height);
+  const span = document.createElement("span");
+  span.className = "ripple";
+  span.style.width = span.style.height = size + "px";
+  span.style.left = (e.clientX - rect.left - size/2) + "px";
+  span.style.top = (e.clientY - rect.top - size/2) + "px";
+  el.appendChild(span);
+  span.addEventListener("animationend", () => span.remove());
+}
+
+function renderChips(){
+  chipsEl.innerHTML = "";
+  rubros.forEach(r => {
+    const btn = document.createElement("button");
+    btn.className = "chip" + (r === activeRubro ? " active" : "");
+    btn.textContent = r;
+    btn.addEventListener("click", (e) => {
+      createRipple(e, btn);
+      activeRubro = r;
+      renderChips();
+      renderGrid();
+    });
+    chipsEl.appendChild(btn);
+  });
+}
+
+function renderGrid(){
+  const q = normalize(searchInput.value.trim());
+  clearBtn.style.display = q ? "inline-block" : "none";
+
+  const filtered = personas.filter(p => {
+    const matchesRubro = activeRubro === "Todos" || p.rubro === activeRubro;
+    const matchesQuery = q === "" || p._haystack.includes(q);
+    return matchesRubro && matchesQuery;
+  });
+
+  resultCount.innerHTML = `<span>${activeRubro === "Todos" ? "Todos los rubros" : activeRubro}</span><span><span class="n">${filtered.length}</span> vecino${filtered.length===1?"":"s"} encontrado${filtered.length===1?"":"s"}</span>`;
+
+  gridEl.innerHTML = "";
+  emptyState.style.display = filtered.length ? "none" : "block";
+
+  filtered.forEach((p, i) => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.style.animationDelay = (i * 0.03) + "s";
+
+    let metaHtml = "";
+    if (p.horario) metaHtml += `<div class="meta-row">${iconClock()}<span>${p.horario}</span></div>`;
+    if (p.telefono) metaHtml += `<div class="meta-row">${iconPhone()}<a href="tel:${p.telefono.replace(/[^0-9+]/g,'')}">${p.telefono}</a></div>`;
+    if (p.email) metaHtml += `<div class="meta-row">${iconMail()}<a href="mailto:${p.email}">${p.email}</a></div>`;
+    if (p.direccion) metaHtml += `<div class="meta-row">${iconPin()}<span>${p.direccion}${p.indicaciones ? ` <span class="indic">— ${p.indicaciones}</span>` : ""}</span></div>`;
+
+    let socialsHtml = "";
+    if (p.instagram) socialsHtml += `<span class="social-tag">IG ${p.instagram}</span>`;
+    if (p.facebook) socialsHtml += `<span class="social-tag">FB ${p.facebook}</span>`;
+    if (p.web) socialsHtml += `<span class="social-tag">Web ${p.web}</span>`;
+
+    card.innerHTML = `
+      <div class="card-top">
+        <h3>${p.nombre}</h3>
+        <span class="badge">${p.rubro}</span>
+      </div>
+      ${p.subrubro ? `<p class="subrubro">${p.subrubro}</p>` : ""}
+      ${p.descripcion ? `<p class="desc">${p.descripcion}</p>` : ""}
+      ${p.observaciones ? `<p class="obs">${p.observaciones}</p>` : ""}
+      <div class="meta">${metaHtml}</div>
+      ${socialsHtml ? `<div class="socials">${socialsHtml}</div>` : ""}
+    `;
+    gridEl.appendChild(card);
+  });
+}
+
+searchInput.addEventListener("input", renderGrid);
+clearBtn.addEventListener("click", (e) => { createRipple(e, clearBtn); searchInput.value = ""; renderGrid(); searchInput.focus(); });
+document.getElementById("retryBtn").addEventListener("click", (e) => { createRipple(e, e.currentTarget); cargarDatos(); });
+document.getElementById("refreshBtn").addEventListener("click", (e) => { createRipple(e, e.currentTarget); cargarDatos(); });
+
+cargarDatos();
+</script>
+</body>
+</html>
