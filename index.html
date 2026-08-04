@@ -245,7 +245,7 @@
   }
   @keyframes rise{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
 
-  .card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:6px;}
+  .card-top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:6px 10px;margin-bottom:6px;}
   .card h3{
     font-family:'Fraunces', serif;
     font-weight:600;
@@ -253,8 +253,10 @@
     margin:0;
     line-height:1.2;
     color:var(--pine-deep);
+    min-width:0;
+    flex:1 1 auto;
   }
-  .badge-group{display:flex;align-items:center;gap:6px;flex:none;}
+  .badge-group{display:flex;align-items:center;gap:6px;flex-wrap:wrap;max-width:100%;}
   .badge{
     font-family:'IBM Plex Mono', monospace;
     font-size:10.5px;
