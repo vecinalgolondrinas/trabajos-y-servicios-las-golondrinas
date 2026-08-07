@@ -971,34 +971,6 @@ function renderSubSubChips(){
   });
 }
 
-function renderGrid(){
-  const q = normalize(searchInput.value.trim());
-  clearBtn.style.display = q ? "inline-block" : "none";
-
-  const filtered = personas.filter(p => {
-    const matchesRubro = activeRubro === "Todos" || p.rubro === activeRubro;
-    const matchesSubrubro = activeSubrubro === "Todas" || p.subrubro === activeSubrubro;
-    const matchesSubSubrubro = activeSubSubrubro === "Todas" || p.subsubrubro === activeSubSubrubro;
-    const matchesQuery = q === "" || p._haystack.includes(q);
-    return matchesRubro && matchesSubrubro && matchesSubSubrubro && matchesQuery;
-  });
-
-  if (ordenActual === "recientes"){
-    filtered.sort((a, b) => (b._fecha ? b._fecha.getTime() : 0) - (a._fecha ? a._fecha.getTime() : 0));
-  } else if (ordenActual === "rubro"){
-    filtered.sort((a, b) => a.rubro.localeCompare(b.rubro, "es") || a.nombre.localeCompare(b.nombre, "es"));
-  } else {
-    filtered.sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
-  }
-
-  let etiqueta = activeRubro === "Todos" ? "Todos los rubros" : activeRubro;
-  if (activeSubrubro !== "Todas") etiqueta += ` · ${activeSubrubro}`;
-  if (activeSubSubrubro !== "Todas") etiqueta += ` · ${activeSubSubrubro}`;
-  resultCount.innerHTML = `<span>${etiqueta}</span><span><span class="n">${filtered.length}</span> vecino${filtered.length===1?"":"s"} encontrado${filtered.length===1?"":"s"}</span>`;
-
-  gridEl.innerHTML = "";
-  emptyState.style.display = filtered.length ? "none" : "block";
-
 function armarFichaHTML(p){
   let metaHtml = "";
   if (p.horario) metaHtml += `<div class="meta-row">${iconClock()}<span>${p.horario}</span></div>`;
@@ -1032,6 +1004,34 @@ function armarFichaHTML(p){
       </div>
     `;
 }
+
+function renderGrid(){
+  const q = normalize(searchInput.value.trim());
+  clearBtn.style.display = q ? "inline-block" : "none";
+
+  const filtered = personas.filter(p => {
+    const matchesRubro = activeRubro === "Todos" || p.rubro === activeRubro;
+    const matchesSubrubro = activeSubrubro === "Todas" || p.subrubro === activeSubrubro;
+    const matchesSubSubrubro = activeSubSubrubro === "Todas" || p.subsubrubro === activeSubSubrubro;
+    const matchesQuery = q === "" || p._haystack.includes(q);
+    return matchesRubro && matchesSubrubro && matchesSubSubrubro && matchesQuery;
+  });
+
+  if (ordenActual === "recientes"){
+    filtered.sort((a, b) => (b._fecha ? b._fecha.getTime() : 0) - (a._fecha ? a._fecha.getTime() : 0));
+  } else if (ordenActual === "rubro"){
+    filtered.sort((a, b) => a.rubro.localeCompare(b.rubro, "es") || a.nombre.localeCompare(b.nombre, "es"));
+  } else {
+    filtered.sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
+  }
+
+  let etiqueta = activeRubro === "Todos" ? "Todos los rubros" : activeRubro;
+  if (activeSubrubro !== "Todas") etiqueta += ` · ${activeSubrubro}`;
+  if (activeSubSubrubro !== "Todas") etiqueta += ` · ${activeSubSubrubro}`;
+  resultCount.innerHTML = `<span>${etiqueta}</span><span><span class="n">${filtered.length}</span> vecino${filtered.length===1?"":"s"} encontrado${filtered.length===1?"":"s"}</span>`;
+
+  gridEl.innerHTML = "";
+  emptyState.style.display = filtered.length ? "none" : "block";
 
   filtered.forEach((p, i) => {
     const card = document.createElement("div");
