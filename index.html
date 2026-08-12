@@ -903,11 +903,19 @@ function whatsappLink(telefono){
 }
 
 // arma el link de instagram/facebook/pagina web a partir de lo que haya cargado la persona:
-// si ya pegó el link completo lo usa tal cual, si solo puso el usuario (con o sin @) arma el link solo
+// si ya pegó el link completo lo usa tal cual, si puso el usuario (con o sin @) arma el link solo,
+// y si parece un nombre y apellido (tiene espacios) arma un link de busqueda en esa red en vez de
+// un link directo roto
 function socialLink(tipo, valor){
   if (!valor) return "";
   let v = valor.trim();
   if (/^https?:\/\//i.test(v)) return v;
+  if (/\s/.test(v)){
+    const q = encodeURIComponent(v);
+    if (tipo === "instagram") return `https://www.instagram.com/explore/search/keyword/?q=${q}`;
+    if (tipo === "facebook") return `https://www.facebook.com/search/top/?q=${q}`;
+    return `https://www.google.com/search?q=${q}`;
+  }
   v = v.replace(/^@/, "").replace(/^www\./i, "");
   if (tipo === "instagram") return `https://instagram.com/${v}`;
   if (tipo === "facebook") return `https://facebook.com/${v}`;
