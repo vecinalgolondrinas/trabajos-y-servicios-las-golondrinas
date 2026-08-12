@@ -411,6 +411,7 @@
 
   .socials{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
   .card-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;}
+  .icon-group{display:flex;gap:8px;flex:none;}
   .wa-btn{
     display:flex;
     align-items:center;
@@ -1041,10 +1042,12 @@ function armarFichaHTML(p){
       <div class="meta">${metaHtml}</div>
       <div class="card-actions">
         ${wa ? `<a class="wa-btn" href="${wa}" target="_blank" rel="noopener">${iconWhatsapp()} Escribir por WhatsApp</a>` : ""}
-        <button class="share-btn" type="button" title="Compartir esta ficha" aria-label="Compartir esta ficha">${iconShare()}</button>
-        ${ig ? `<a class="icon-btn instagram-btn" href="${ig}" target="_blank" rel="noopener" title="Instagram" aria-label="Ver Instagram">${iconInstagram()}</a>` : ""}
-        ${fb ? `<a class="icon-btn facebook-btn" href="${fb}" target="_blank" rel="noopener" title="Facebook" aria-label="Ver Facebook">${iconFacebook()}</a>` : ""}
-        ${web ? `<a class="icon-btn web-btn" href="${web}" target="_blank" rel="noopener" title="Página web" aria-label="Ver página web">${iconGlobe()}</a>` : ""}
+        <div class="icon-group">
+          <button class="share-btn" type="button" title="Compartir esta ficha" aria-label="Compartir esta ficha">${iconShare()}</button>
+          ${ig ? `<a class="icon-btn instagram-btn" href="${ig}" target="_blank" rel="noopener" title="Instagram" aria-label="Ver Instagram">${iconInstagram()}</a>` : ""}
+          ${fb ? `<a class="icon-btn facebook-btn" href="${fb}" target="_blank" rel="noopener" title="Facebook" aria-label="Ver Facebook">${iconFacebook()}</a>` : ""}
+          ${web ? `<a class="icon-btn web-btn" href="${web}" target="_blank" rel="noopener" title="Página web" aria-label="Ver página web">${iconGlobe()}</a>` : ""}
+        </div>
       </div>
     `;
 }
