@@ -598,6 +598,57 @@
   .theme-toggle{bottom:78px;font-size:19px;}
   .font-toggle{bottom:134px;font-size:14px;font-family:'IBM Plex Mono',monospace;font-weight:600;}
 
+  .install-btn{
+    position:fixed;
+    left:22px; bottom:22px;
+    z-index:50;
+    display:flex; align-items:center; gap:8px;
+    padding:12px 18px;
+    border-radius:100px;
+    border:none;
+    background:var(--rust);
+    color:#fff;
+    font-family:'Work Sans', sans-serif;
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+    box-shadow:0 6px 18px rgba(168,83,39,0.4);
+    transition:transform .18s cubic-bezier(.34,1.56,.64,1), box-shadow .18s ease, background-color .2s ease;
+  }
+  .install-btn:hover{background:#8a4520;transform:translateY(-3px);box-shadow:0 10px 22px rgba(168,83,39,0.45);}
+  .install-btn:active{transform:translateY(0) scale(0.95);}
+
+  .ios-install-tip{
+    position:fixed;
+    left:16px; right:16px; bottom:22px;
+    max-width:420px;
+    margin:0 auto;
+    z-index:50;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:14px 34px 14px 16px;
+    font-size:13px;
+    line-height:1.5;
+    color:var(--ink);
+    box-shadow:var(--shadow);
+  }
+  .ios-tip-close{
+    position:absolute;
+    top:8px; right:8px;
+    width:24px;height:24px;
+    border:none;
+    background:var(--paper-2);
+    color:var(--ink-soft);
+    border-radius:50%;
+    cursor:pointer;
+    font-size:12px;
+  }
+
+  @media (max-width:520px){
+    .install-btn{left:14px;bottom:14px;padding:10px 15px;font-size:13px;}
+  }
+
   /* ---- modal de ficha ampliada ---- */
   .modal-backdrop{
     position:fixed; inset:0;
@@ -779,6 +830,11 @@
 <button id="toTopBtn" class="to-top-btn" aria-label="Volver arriba" title="Volver arriba"></button>
 <button id="themeToggle" class="theme-toggle" aria-label="Cambiar tema" title="Modo claro/oscuro">🌙</button>
 <button id="fontToggle" class="theme-toggle font-toggle" aria-label="Agrandar letra" title="Agrandar letra">Aa</button>
+<button id="installBtn" class="install-btn" type="button" style="display:none;">📲 Instalar app</button>
+<div class="ios-install-tip" id="iosInstallTip" style="display:none;">
+  <button class="ios-tip-close" id="iosTipClose" aria-label="Cerrar">✕</button>
+  Para instalarla: tocá el botón <b>Compartir</b> (el cuadradito con la flecha ↑) y elegí <b>"Agregar a inicio"</b>.
+</div>
 
 <div class="modal-backdrop" id="modalBackdrop">
   <div class="modal-card">
@@ -1339,6 +1395,45 @@ if ("serviceWorker" in navigator){
     navigator.serviceWorker.register("sw.js").catch(() => {});
   });
 }
+
+// ---- boton de instalar la app ----
+const installBtn = document.getElementById("installBtn");
+const iosInstallTip = document.getElementById("iosInstallTip");
+const iosTipClose = document.getElementById("iosTipClose");
+
+const yaInstalada = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+const esIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+
+let promptDeInstalacion = null;
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  promptDeInstalacion = e;
+  if (!yaInstalada) installBtn.style.display = "flex"; // Chrome/Edge/Android: se puede instalar con un click
+});
+
+installBtn.addEventListener("click", async () => {
+  if (!promptDeInstalacion) return;
+  promptDeInstalacion.prompt();
+  await promptDeInstalacion.userChoice;
+  promptDeInstalacion = null;
+  installBtn.style.display = "none";
+});
+
+window.addEventListener("appinstalled", () => {
+  installBtn.style.display = "none";
+  iosInstallTip.style.display = "none";
+});
+
+// iPhone/iPad no tiene el evento anterior: no se puede instalar con un click,
+// asi que mostramos el paso a paso en su lugar
+if (esIOS && !yaInstalada){
+  installBtn.textContent = "📲 Instalar app";
+  installBtn.style.display = "flex";
+  installBtn.addEventListener("click", () => {
+    iosInstallTip.style.display = "block";
+  });
+}
+iosTipClose.addEventListener("click", () => { iosInstallTip.style.display = "none"; });
 
 // ---- tamaño de letra (accesibilidad): normal -> grande -> mas grande -> normal ----
 const fontToggle = document.getElementById("fontToggle");
