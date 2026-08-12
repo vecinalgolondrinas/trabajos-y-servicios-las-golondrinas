@@ -1,0 +1,16 @@
+{
+  "name": "Trabajos y Servicios — Paraje Las Golondrinas",
+  "short_name": "Las Golondrinas",
+  "description": "Directorio de vecinos y vecinas que ofrecen oficios, actividades, profesiones y servicios en Paraje Las Golondrinas.",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#EFEADA",
+  "theme_color": "#3F5039",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
