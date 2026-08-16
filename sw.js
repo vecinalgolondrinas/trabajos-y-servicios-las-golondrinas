@@ -2,12 +2,14 @@
 // Objetivo: que la página abra aunque no haya señal, mostrando la última
 // version guardada (tanto de la pagina en si como de los datos de la planilla).
 
-const CACHE_APP = "golondrinas-app-v1";
+const CACHE_APP = "golondrinas-app-v2";
 const CACHE_DATOS = "golondrinas-datos-v1";
 
 const ARCHIVOS_APP = [
   "./",
   "./index.html",
+  "./styles.css",
+  "./app.js",
   "./manifest.json",
   "./logo-junta-vecinal.jpg",
   "./icon-192.png",
